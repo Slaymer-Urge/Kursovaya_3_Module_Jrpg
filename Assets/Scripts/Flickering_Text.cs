@@ -6,6 +6,7 @@ public class Text_ : MonoBehaviour
     public TMP_Text current_item_text;
     bool flicked = false;
     public float speed_flick = 0.0025f;
+    string ppp = "Первый коммит гитхаб";
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
