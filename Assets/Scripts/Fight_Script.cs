@@ -12,6 +12,7 @@ public class Fight_Script : MonoBehaviour
     public GameObject Player;
     public GameObject Inv_Empty;
     public GameObject HUD_Fight_Empty;
+    public GameObject HUD_Fight;
     int current_queue = 0;
     bool wait_player_motion_attack;
     public int current_enemy;
@@ -92,11 +93,14 @@ public class Fight_Script : MonoBehaviour
         
         if (wait_player_motion_attack && Keyboard.current.digit1Key.isPressed && can_use_buttons)
         {
+            HUD_Fight.GetComponent<HUD_FIght_Script>().Pressed1();
             StartCoroutine(Courine_Wait());
             if (current_enemy == 1)
             {
-               Enemy_1.GetComponent<Character_Script>().HP -= characters_list[current_queue].GetComponent<Character_Script>().DMG_Hand;
-               wait_player_motion_attack = false;
+                Enemy_1.GetComponent<Character_Script>().HP -= characters_list[current_queue].GetComponent<Character_Script>().DMG_Hand;
+                HUD_Fight.GetComponent<HUD_FIght_Script>().Get_DMG_Enemys(Enemy_1.GetComponent<Character_Script>().HP/ Enemy_1.GetComponent<Character_Script>().MaxHP,1);
+                HUD_Fight.GetComponent<HUD_FIght_Script>().Back_Def();
+                wait_player_motion_attack = false;
                 anim_obj_attack = Instantiate(characters_list[current_queue].GetComponent<Character_Script>().object_attack);
                 anim_obj_attack.transform.position = characters_list[current_queue].transform.position;
                 final_place = Enemy_1.transform.position;
@@ -113,10 +117,13 @@ public class Fight_Script : MonoBehaviour
         }
         if (wait_player_motion_attack && Keyboard.current.digit2Key.isPressed && can_use_buttons)
         {
+            HUD_Fight.GetComponent<HUD_FIght_Script>().Pressed2();
             StartCoroutine(Courine_Wait());
             if (current_enemy == 2)
             {
                 Enemy_2.GetComponent<Character_Script>().HP -= characters_list[current_queue].GetComponent<Character_Script>().DMG_Hand;
+                HUD_Fight.GetComponent<HUD_FIght_Script>().Get_DMG_Enemys(Enemy_2.GetComponent<Character_Script>().HP / Enemy_2.GetComponent<Character_Script>().MaxHP, 2);
+                HUD_Fight.GetComponent<HUD_FIght_Script>().Back_Def();
                 wait_player_motion_attack = false;
                 anim_obj_attack = Instantiate(characters_list[current_queue].GetComponent<Character_Script>().object_attack);
                 anim_obj_attack.transform.position = characters_list[current_queue].transform.position;
@@ -134,10 +141,13 @@ public class Fight_Script : MonoBehaviour
         }
         if (wait_player_motion_attack && Keyboard.current.digit3Key.isPressed && can_use_buttons)
         {
+            HUD_Fight.GetComponent<HUD_FIght_Script>().Pressed3();
             StartCoroutine(Courine_Wait());
             if (current_enemy == 3)
             {
                 Enemy_3.GetComponent<Character_Script>().HP -= characters_list[current_queue].GetComponent<Character_Script>().DMG_Hand;
+                HUD_Fight.GetComponent<HUD_FIght_Script>().Get_DMG_Enemys(Enemy_3.GetComponent<Character_Script>().HP / Enemy_3.GetComponent<Character_Script>().MaxHP, 3);
+                HUD_Fight.GetComponent<HUD_FIght_Script>().Back_Def();
                 wait_player_motion_attack = false;
                 anim_obj_attack = Instantiate(characters_list[current_queue].GetComponent<Character_Script>().object_attack);
                 anim_obj_attack.transform.position = characters_list[current_queue].transform.position;
@@ -155,6 +165,7 @@ public class Fight_Script : MonoBehaviour
         }
         if ((current_queue == 0 || current_queue == 1) && Keyboard.current.qKey.isPressed)
         {
+            HUD_Fight.GetComponent<HUD_FIght_Script>().QPressed();
             current_enemy = 1;
             Player_Motion_Attack(current_queue);
         } 

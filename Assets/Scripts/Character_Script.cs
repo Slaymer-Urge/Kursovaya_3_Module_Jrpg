@@ -3,8 +3,9 @@ using UnityEngine;
 public class Character_Script : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public int HP;
-    public int DMG_Hand;
+    public float HP;
+    public float MaxHP;
+    public float DMG_Hand;
     public int Mana;
     public bool Died = false;
     public string Type_Character;
