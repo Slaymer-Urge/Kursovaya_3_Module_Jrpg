@@ -693,7 +693,9 @@ PlayerSettings:
   XboxOneOverrideIdentityName: 
   XboxOneOverrideIdentityPublisher: 
   vrEditorSettings: {}
-  cloudServicesEnabled: {}
+  cloudServicesEnabled:
+    Purchasing: 0
+    Unity Ads: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -719,7 +721,7 @@ PlayerSettings:
   cloudProjectId: d991360a-a7c4-453f-877f-2bc82603f231
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Курсовая 3 модуль
+  projectName: "\u041A\u0443\u0440\u0441\u043E\u0432\u0430\u044F 3 \u043C\u043E\u0434\u0443\u043B\u044C"
   organizationId: bebrobich2020mo5q912o
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0

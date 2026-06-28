@@ -12,6 +12,7 @@ public class ChooseScriipt : MonoBehaviour
     int last_slot = 0;
     public GameObject Inventory_Object;
     bool blocked_drop = false;
+    [SerializeField] GameObject Fight_Empty;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -24,9 +25,16 @@ public class ChooseScriipt : MonoBehaviour
         {
             current_item.text = "Объект " + collision.gameObject.name;
             Empty.SetActive(true);
+            return;
+        }
+        if (collision.gameObject.GetComponent<Character_Script>().Type_Character == "Враг")
+        {
+            Fight_Empty.GetComponent<Fight_Script>().Start_Fight(collision.gameObject.GetComponent<Enemy_Script>().list_enemys_for_fight);
         }
 
     }
+
+
 
     IEnumerator Waiting_drop()
     {

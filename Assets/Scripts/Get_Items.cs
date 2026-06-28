@@ -8,7 +8,7 @@ public class Get_Items : MonoBehaviour
     public GameObject Inventory_Object;
     public bool can_get_up = true;
     public int count_effect;
-    public int number_effect;
+    public int number_effect;   
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

@@ -15,7 +15,7 @@ public class Spawn_Resource : MonoBehaviour
     IEnumerator Waiting_Spawn()
     {
         yield return new WaitForSeconds(3f);
-        Debug.Log("Ресурс заспавлен");
+        
         is_spawned = true;
     }
 

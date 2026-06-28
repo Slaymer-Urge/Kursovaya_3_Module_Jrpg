@@ -18,7 +18,7 @@ public class Inventory : MonoBehaviour
     public TMP_Text[] items_buffs = new TMP_Text[5];
     public GameObject new_item;
     bool Inv_Open = false;
-    bool can_use_inv = true;
+    public bool can_use_inv = true;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -36,7 +36,7 @@ public class Inventory : MonoBehaviour
     
     public void Drop_Item(int current_slot, Vector3 place_drop)
     {
-        Debug.Log(Count_Item[current_slot]); 
+        
         if (Count_Item[current_slot] != 0 && Count_Item[current_slot] != 1)
         {
             Count_Item[current_slot]--;
@@ -118,23 +118,28 @@ public class Inventory : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Keyboard.current.tKey.wasPressedThisFrame)
+        if (can_use_inv)
         {
-            if (can_use_inv == true) {
-                if (Inv_Open == false)
-                {   Inv_Open = true;
-                    empty_hud_inv.SetActive(true);
-                    return;
-                 //   StartCoroutine(wait_inv_hud());
-                }
-                if (Inv_Open == true) 
+            if (Keyboard.current.tKey.wasPressedThisFrame)
+            {
+                if (can_use_inv == true)
                 {
-                    Inv_Open = false;
-                    empty_hud_inv.SetActive(false);
-                //    StartCoroutine(wait_inv_hud());
-                } 
+                    if (Inv_Open == false)
+                    {
+                        Inv_Open = true;
+                        empty_hud_inv.SetActive(true);
+                        return;
+                        //   StartCoroutine(wait_inv_hud());
+                    }
+                    if (Inv_Open == true)
+                    {
+                        Inv_Open = false;
+                        empty_hud_inv.SetActive(false);
+                        //    StartCoroutine(wait_inv_hud());
+                    }
+                }
+
             }
-            
         }
     }
 }
