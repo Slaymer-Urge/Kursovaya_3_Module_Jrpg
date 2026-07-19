@@ -19,6 +19,7 @@ public class Fight_Script : MonoBehaviour
     GameObject Enemy_1;
     GameObject Enemy_2;
     GameObject Enemy_3;
+    GameObject[] Enemys_List_Here = new GameObject[3];
     bool can_use_buttons = true;
     GameObject anim_obj_attack;
     bool animation_attack = false;
@@ -39,6 +40,20 @@ public class Fight_Script : MonoBehaviour
         Camera.transform.position = (Spawn_Emptys[0].transform.position + Spawn_Emptys[2].transform.position) / 2;
         Camera.transform.position = new Vector3(Camera.transform.position.x, Camera.transform.position.y - 3.25f, -10f);
         HUD_Fight_Empty.SetActive(true);
+        if (enemys_list[2] == null)
+        {
+            HUD_Fight.GetComponent<HUD_Fight_Script>().Start_Fight(2);
+        }
+        if (enemys_list[1] == null)
+        {
+            HUD_Fight.GetComponent<HUD_Fight_Script>().Start_Fight(1);
+        }
+        if (enemys_list[2] != null) 
+        {
+            HUD_Fight.GetComponent<HUD_Fight_Script>().Start_Fight(3);
+        }
+
+
         characters_list[0].transform.position = Spawn_Emptys[0].transform.position;
         if (characters_list[1] != null)
         {
@@ -48,17 +63,21 @@ public class Fight_Script : MonoBehaviour
         {
             Enemy_1 = Instantiate(enemys_list[0]);
             Enemy_1.transform.position = Spawn_Emptys[2].transform.position;
+            Enemys_List_Here[0] = Enemy_1;
+            
         }
 
         if (enemys_list[1] != null)
         {
             Enemy_2 = Instantiate(enemys_list[1]);
             Enemy_2.transform.position = Spawn_Emptys[3].transform.position;
+            Enemys_List_Here[1] = Enemy_2;
         }
         if (enemys_list[2] != null)
         {
             Enemy_3 = Instantiate(enemys_list[2]);
             Enemy_3.transform.position = Spawn_Emptys[4].transform.position;
+            Enemys_List_Here[2] = Enemy_3;
         }
     }
 
@@ -74,11 +93,40 @@ public class Fight_Script : MonoBehaviour
         can_use_buttons = true;
     }
 
+    IEnumerator Enemy_Attack_Default()
+    {
+        if (Enemys_List_Here[current_queue-2] != null)
+        {
+            can_use_buttons = false;
+            yield return new WaitForSeconds(1f);
+            int current_target = Random.Range(0, 2);
+            Debug.Log(characters_list[current_target].GetComponent<Character_Script>().HP);
+            Debug.Log(Enemys_List_Here[current_queue - 2]);
+            characters_list[current_target].GetComponent<Character_Script>().HP -= Enemys_List_Here[current_queue - 2].GetComponent<Character_Script>().DMG_Hand;
+            StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(characters_list[current_target].GetComponent<Character_Script>().HP / characters_list[current_target].GetComponent<Character_Script>().MaxHP, current_target + 4));
+            anim_obj_attack = Instantiate(Enemys_List_Here[current_queue - 2].GetComponent<Character_Script>().object_attack);
+            anim_obj_attack.transform.position = Enemys_List_Here[current_queue - 2].transform.position;
+            final_place = characters_list[current_target].transform.position;
+            move_speed_x = (final_place.x - anim_obj_attack.transform.position.x) / 500;
+            move_speed_y = (final_place.y - anim_obj_attack.transform.position.y) / 500;
+            anim_tick = 0;
+            current_queue += 1;
+            animation_attack = true;
+            can_use_buttons = true;
+        }
+        else { current_queue += 1; }
+
+    }
+
     int anim_tick = 0;
 
     // Update is called once per frame
     void Update()
     {
+        if (current_queue == 5)
+        {
+            current_queue = 0;
+        }
         if (animation_attack && anim_tick <=500)
         {
             anim_obj_attack.transform.position = new Vector3(anim_obj_attack.transform.position.x + move_speed_x, anim_obj_attack.transform.position.y + move_speed_y, anim_obj_attack.transform.position.z);
@@ -93,13 +141,13 @@ public class Fight_Script : MonoBehaviour
         
         if (wait_player_motion_attack && Keyboard.current.digit1Key.isPressed && can_use_buttons)
         {
-            HUD_Fight.GetComponent<HUD_FIght_Script>().Pressed1();
+            HUD_Fight.GetComponent<HUD_Fight_Script>().Pressed1();
             StartCoroutine(Courine_Wait());
             if (current_enemy == 1)
             {
                 Enemy_1.GetComponent<Character_Script>().HP -= characters_list[current_queue].GetComponent<Character_Script>().DMG_Hand;
-                HUD_Fight.GetComponent<HUD_FIght_Script>().Get_DMG_Enemys(Enemy_1.GetComponent<Character_Script>().HP/ Enemy_1.GetComponent<Character_Script>().MaxHP,1);
-                HUD_Fight.GetComponent<HUD_FIght_Script>().Back_Def();
+                StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(Enemy_1.GetComponent<Character_Script>().HP / Enemy_1.GetComponent<Character_Script>().MaxHP, 1));
+                HUD_Fight.GetComponent<HUD_Fight_Script>().Back_Def();
                 wait_player_motion_attack = false;
                 anim_obj_attack = Instantiate(characters_list[current_queue].GetComponent<Character_Script>().object_attack);
                 anim_obj_attack.transform.position = characters_list[current_queue].transform.position;
@@ -117,13 +165,13 @@ public class Fight_Script : MonoBehaviour
         }
         if (wait_player_motion_attack && Keyboard.current.digit2Key.isPressed && can_use_buttons)
         {
-            HUD_Fight.GetComponent<HUD_FIght_Script>().Pressed2();
+            HUD_Fight.GetComponent<HUD_Fight_Script>().Pressed2();
             StartCoroutine(Courine_Wait());
             if (current_enemy == 2)
             {
                 Enemy_2.GetComponent<Character_Script>().HP -= characters_list[current_queue].GetComponent<Character_Script>().DMG_Hand;
-                HUD_Fight.GetComponent<HUD_FIght_Script>().Get_DMG_Enemys(Enemy_2.GetComponent<Character_Script>().HP / Enemy_2.GetComponent<Character_Script>().MaxHP, 2);
-                HUD_Fight.GetComponent<HUD_FIght_Script>().Back_Def();
+                StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(Enemy_2.GetComponent<Character_Script>().HP / Enemy_2.GetComponent<Character_Script>().MaxHP, 2));
+                HUD_Fight.GetComponent<HUD_Fight_Script>().Back_Def();
                 wait_player_motion_attack = false;
                 anim_obj_attack = Instantiate(characters_list[current_queue].GetComponent<Character_Script>().object_attack);
                 anim_obj_attack.transform.position = characters_list[current_queue].transform.position;
@@ -141,13 +189,13 @@ public class Fight_Script : MonoBehaviour
         }
         if (wait_player_motion_attack && Keyboard.current.digit3Key.isPressed && can_use_buttons)
         {
-            HUD_Fight.GetComponent<HUD_FIght_Script>().Pressed3();
+            HUD_Fight.GetComponent<HUD_Fight_Script>().Pressed3();
             StartCoroutine(Courine_Wait());
             if (current_enemy == 3)
             {
                 Enemy_3.GetComponent<Character_Script>().HP -= characters_list[current_queue].GetComponent<Character_Script>().DMG_Hand;
-                HUD_Fight.GetComponent<HUD_FIght_Script>().Get_DMG_Enemys(Enemy_3.GetComponent<Character_Script>().HP / Enemy_3.GetComponent<Character_Script>().MaxHP, 3);
-                HUD_Fight.GetComponent<HUD_FIght_Script>().Back_Def();
+                StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(Enemy_3.GetComponent<Character_Script>().HP / Enemy_3.GetComponent<Character_Script>().MaxHP, 3));
+                HUD_Fight.GetComponent<HUD_Fight_Script>().Back_Def();
                 wait_player_motion_attack = false;
                 anim_obj_attack = Instantiate(characters_list[current_queue].GetComponent<Character_Script>().object_attack);
                 anim_obj_attack.transform.position = characters_list[current_queue].transform.position;
@@ -165,9 +213,14 @@ public class Fight_Script : MonoBehaviour
         }
         if ((current_queue == 0 || current_queue == 1) && Keyboard.current.qKey.isPressed)
         {
-            HUD_Fight.GetComponent<HUD_FIght_Script>().QPressed();
+            HUD_Fight.GetComponent<HUD_Fight_Script>().QPressed();
             current_enemy = 1;
             Player_Motion_Attack(current_queue);
         } 
+        if ((current_queue == 2 || current_queue == 3 || current_queue == 4) && can_use_buttons)
+        {
+            Debug.Log(current_queue);
+            StartCoroutine(Enemy_Attack_Default());
+        }
     }
 }

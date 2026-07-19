@@ -1,9 +1,10 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class HUD_FIght_Script : MonoBehaviour
+public class HUD_Fight_Script : MonoBehaviour
 {
     public GameObject Empty_HUD_Def;
     public GameObject Empty_HUD_Attack;
@@ -15,14 +16,50 @@ public class HUD_FIght_Script : MonoBehaviour
     public Image Bar_HP_1;
     public Image Bar_HP_2;
     public Image Bar_HP_3;
+    public Image Bar_HP_4;
+    public Image Bar_HP_5;
+    public GameObject[] HP_Bars_Emptys = new GameObject[5];
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
 
     }
 
-    public void Get_DMG_Enemys(float scalee,int numberr)
+
+    public void Start_Fight(int count_enemys)
     {
+        HP_Bars_Emptys[3].SetActive(true);
+        HP_Bars_Emptys[4].SetActive(true);
+        if (count_enemys == 1)
+        {
+            HP_Bars_Emptys[0].SetActive(true);
+
+        }
+        if (count_enemys == 2)
+        {
+
+            HP_Bars_Emptys[0].SetActive(true);
+            HP_Bars_Emptys[1].SetActive(true);
+        }
+        if (count_enemys == 3)
+        {
+            HP_Bars_Emptys[0].SetActive(true);
+            HP_Bars_Emptys[1].SetActive(true);
+            HP_Bars_Emptys[2].SetActive(true);
+        }
+    }
+
+    public IEnumerator Get_DMG_Enemys(float scalee,int numberr)
+    {
+        yield return new WaitForSeconds(1f);
+        if (numberr == 4)
+        {
+            Bar_HP_4.transform.localScale = new Vector3(scalee, Bar_HP_4.transform.localScale.y, Bar_HP_4.transform.localScale.z);
+        }
+        if (numberr == 5)
+        {
+            Bar_HP_5.transform.localScale = new Vector3(scalee, Bar_HP_5.transform.localScale.y, Bar_HP_4.transform.localScale.z);
+        }
         if (numberr == 1) {
             Bar_HP_1.transform.localScale = new Vector3(scalee, Bar_HP_1.transform.localScale.y, Bar_HP_1.transform.localScale.z);
                 }
@@ -48,7 +85,9 @@ public class HUD_FIght_Script : MonoBehaviour
     {
         Empty_HUD_Attack.SetActive(true);
         Empty_HUD_Def.SetActive(false);
+        Button_Attack.SetText("1");
     }
+
 
     public void Pressed1()
     {
