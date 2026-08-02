@@ -6,8 +6,8 @@ using static UnityEngine.GraphicsBuffer;
 
 public class Fight_Script : MonoBehaviour
 {
-    GameObject[] characters_list;
-    
+    public GameObject[] characters_list;
+    public GameObject HUD_Lose;
     public GameObject[] Spawn_Emptys = new GameObject[5];
     public GameObject Camera;
     public GameObject Player;
@@ -28,11 +28,40 @@ public class Fight_Script : MonoBehaviour
     float move_speed_x;
     float move_speed_y;
     Vector3 last_position_player;
+    public GameObject choose_go;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         characters_list = GameObject.Find("Characters_Lists_Empty").GetComponent<Characters_List>().characters_list;
     }
+
+    public void End_Fight()
+    {
+        Camera.GetComponent<PlayerCamera>().enabled = true;
+        Player.GetComponent<PlayerController>().enabled = true;
+        Inv_Empty.GetComponent<Inventory>().can_use_inv = true;
+        Player.transform.position = last_position_player;
+        characters_list[0].GetComponent<Character_Script>().Died = false;
+        characters_list[0].gameObject.SetActive(true);
+        characters_list[0].GetComponent<Character_Script>().HP = 1;
+        if (characters_list[1] != null)
+        {
+            characters_list[1].GetComponent<Character_Script>().Died = false;
+            characters_list[1].gameObject.SetActive(true);
+            characters_list[1].GetComponent<Character_Script>().HP = 1;
+        }
+        StartCoroutine(choose_go.GetComponent<ChooseScriipt>().Wait_After_Fight()); 
+    }
+
+    void Lost_Fight()
+    {
+        HUD_Lose.GetComponent<Lost_HUD_Script>().Lose_Func();
+        HUD_Fight_Empty.SetActive(false);
+        StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(characters_list[0].GetComponent<Character_Script>().HP / characters_list[0].GetComponent<Character_Script>().MaxHP, 4));
+        StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(characters_list[0].GetComponent<Character_Script>().HP / characters_list[0].GetComponent<Character_Script>().MaxHP, 5));
+
+    }
+
 
     public void Start_Fight(GameObject[] enemys_list, Vector3 last_pos)
     {
@@ -107,10 +136,6 @@ public class Fight_Script : MonoBehaviour
             Debug.Log(characters_list[0].GetComponent<Character_Script>().Died);
             Debug.Log(characters_list[1].GetComponent<Character_Script>().Died);
             Debug.Log(characters_list[0].GetComponent<Character_Script>().Died == true && (characters_list[1] == null || characters_list[1].GetComponent<Character_Script>().Died == true));
-            if (characters_list[0].GetComponent<Character_Script>().Died == true && (characters_list[1] == null || characters_list[1].GetComponent<Character_Script>().Died == true))
-            {
-                Time.timeScale = 0;
-            }
             while (characters_list[current_target].GetComponent<Character_Script>().Died == true)
             {
                 
@@ -164,11 +189,7 @@ public class Fight_Script : MonoBehaviour
 
     }
 
-    void Lost_Fight()
-    {
-        Application.Quit();
-    }
-
+    
     IEnumerator Next_Queue()
     {
         Debug.Log("Проверка на проигрыш, раунд");
@@ -305,8 +326,14 @@ public class Fight_Script : MonoBehaviour
                 current_queue += 1;
                 return;
             }
-            
+            if (characters_list[0].GetComponent<Character_Script>().Died == true && (characters_list[1] == null || characters_list[1].GetComponent<Character_Script>().Died == true))
+            {
+                current_queue = 6;
+                Lost_Fight();
+                return;
+            }
             StartCoroutine(Enemy_Attack_Default());
+            
         }
     }
 }

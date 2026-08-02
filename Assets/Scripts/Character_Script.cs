@@ -7,11 +7,15 @@ public class Character_Script : MonoBehaviour
     public float MaxHP;
     public float DMG_Hand;
     public int Mana;
+    public int MaxMana;
     public bool Died = false;
     public string Type_Character;
     public GameObject Skill_Lists_Empty;
     public Skills_Script_List.Skill[] Skills_Character = new Skills_Script_List.Skill[4];
     public GameObject object_attack;
+    public int exp_death;
+    public int exp_cur;
+    public int level_char;
     
     void Start()
     {

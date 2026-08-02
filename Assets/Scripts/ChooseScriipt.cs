@@ -13,11 +13,14 @@ public class ChooseScriipt : MonoBehaviour
     public GameObject Inventory_Object;
     bool blocked_drop = false;
     [SerializeField] GameObject Fight_Empty;
+    bool blocked_fight = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         normal_x_position = Empty_For_Choose.transform.position.y;
     }
+
+    
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -27,19 +30,25 @@ public class ChooseScriipt : MonoBehaviour
             Empty.SetActive(true);
             return;
         }
-        if (collision.gameObject.GetComponent<Character_Script>().Type_Character == "Враг")
+        if (collision.gameObject.GetComponent<Character_Script>().Type_Character == "Враг" && blocked_fight == false)
         {
-            Fight_Empty.GetComponent<Fight_Script>().Start_Fight(collision.gameObject.GetComponent<Enemy_Script>().list_enemys_for_fight, transform.position);
-            this.gameObject.GetComponent<ChooseScriipt>().enabled = false;
+            Fight_Empty.GetComponent<Fight_Script>().Start_Fight(collision.gameObject.GetComponent<Enemy_Script>().list_enemys_for_fight, this.transform.position);
+            this.gameObject.GetComponent<ChooseScriipt>().enabled = false;  
         }
 
     }
 
+    public IEnumerator Wait_After_Fight()
+    {
+        blocked_fight = true;
+        yield return new WaitForSeconds(2f);
+        blocked_fight = false;
+    }
 
-
-    IEnumerator Waiting_drop()
+    public IEnumerator Waiting_drop()
     {
         yield return new WaitForSeconds(0.5f);
+        this.gameObject.GetComponent<ChooseScriipt>().enabled = true;
         blocked_drop = false;
     }
 
