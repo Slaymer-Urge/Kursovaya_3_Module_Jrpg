@@ -2,6 +2,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.GraphicsBuffer;
 
 public class Fight_Script : MonoBehaviour
 {
@@ -26,14 +27,16 @@ public class Fight_Script : MonoBehaviour
     Vector3 final_place;
     float move_speed_x;
     float move_speed_y;
+    Vector3 last_position_player;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         characters_list = GameObject.Find("Characters_Lists_Empty").GetComponent<Characters_List>().characters_list;
     }
 
-    public void Start_Fight(GameObject[] enemys_list)
+    public void Start_Fight(GameObject[] enemys_list, Vector3 last_pos)
     {
+        last_position_player = last_pos;
         Camera.GetComponent<PlayerCamera>().enabled = false;
         Player.GetComponent<PlayerController>().enabled = false;
         Inv_Empty.GetComponent<Inventory>().can_use_inv = false;
@@ -97,12 +100,31 @@ public class Fight_Script : MonoBehaviour
     {
         if (Enemys_List_Here[current_queue-2] != null)
         {
+            
             can_use_buttons = false;
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(1.5f);
             int current_target = Random.Range(0, 2);
-            Debug.Log(characters_list[current_target].GetComponent<Character_Script>().HP);
-            Debug.Log(Enemys_List_Here[current_queue - 2]);
+            Debug.Log(characters_list[0].GetComponent<Character_Script>().Died);
+            Debug.Log(characters_list[1].GetComponent<Character_Script>().Died);
+            Debug.Log(characters_list[0].GetComponent<Character_Script>().Died == true && (characters_list[1] == null || characters_list[1].GetComponent<Character_Script>().Died == true));
+            if (characters_list[0].GetComponent<Character_Script>().Died == true && (characters_list[1] == null || characters_list[1].GetComponent<Character_Script>().Died == true))
+            {
+                Time.timeScale = 0;
+            }
+            while (characters_list[current_target].GetComponent<Character_Script>().Died == true)
+            {
+                
+                current_target = Random.Range(0, 2);
+            }
+            
+            
+            
             characters_list[current_target].GetComponent<Character_Script>().HP -= Enemys_List_Here[current_queue - 2].GetComponent<Character_Script>().DMG_Hand;
+            if (characters_list[current_target].GetComponent<Character_Script>().HP <= 0)
+            {
+                StartCoroutine(Death_Character(current_target, false));
+                StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(0, current_target + 4));
+            }
             StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(characters_list[current_target].GetComponent<Character_Script>().HP / characters_list[current_target].GetComponent<Character_Script>().MaxHP, current_target + 4));
             anim_obj_attack = Instantiate(Enemys_List_Here[current_queue - 2].GetComponent<Character_Script>().object_attack);
             anim_obj_attack.transform.position = Enemys_List_Here[current_queue - 2].transform.position;
@@ -110,12 +132,51 @@ public class Fight_Script : MonoBehaviour
             move_speed_x = (final_place.x - anim_obj_attack.transform.position.x) / 500;
             move_speed_y = (final_place.y - anim_obj_attack.transform.position.y) / 500;
             anim_tick = 0;
-            current_queue += 1;
+            can_use_buttons = false;
+            StartCoroutine(Next_Queue());
+            StartCoroutine(Courine_Wait());
             animation_attack = true;
-            can_use_buttons = true;
+            yield return new WaitForSeconds(1f);
+            
         }
         else { current_queue += 1; }
 
+    }
+
+    IEnumerator Death_Character(int target,bool is_enemy)
+    {
+        yield return new WaitForSeconds(1f);
+        if (is_enemy)
+        { 
+            Enemys_List_Here[current_enemy-1].gameObject.SetActive(false);
+            Enemys_List_Here[current_enemy-1].GetComponent<Character_Script>().HP = 0;
+            Enemys_List_Here[current_enemy-1].GetComponent<Character_Script>().Died = true;
+            
+
+        }
+        if (is_enemy == false) 
+        {
+            characters_list[target].GetComponent<Character_Script>().Died = true;
+            characters_list[target].gameObject.SetActive(false);
+            characters_list[target].GetComponent<Character_Script>().HP = 0;
+            
+        }
+
+    }
+
+    void Lost_Fight()
+    {
+        Application.Quit();
+    }
+
+    IEnumerator Next_Queue()
+    {
+        Debug.Log("Проверка на проигрыш, раунд");
+        Debug.Log(current_queue);
+        
+        yield return new WaitForSeconds(1f);
+        
+        current_queue += 1;
     }
 
     int anim_tick = 0;
@@ -131,21 +192,26 @@ public class Fight_Script : MonoBehaviour
         {
             anim_obj_attack.transform.position = new Vector3(anim_obj_attack.transform.position.x + move_speed_x, anim_obj_attack.transform.position.y + move_speed_y, anim_obj_attack.transform.position.z);
             anim_tick += 1;
-            if (anim_tick == 500)
-            {
-                animation_attack = false;
-                Destroy(anim_obj_attack);
-                
-            }
         }
-        
+        if (anim_tick >= 500)
+        {
+            animation_attack = false;
+            Destroy(anim_obj_attack);
+        }
+   
         if (wait_player_motion_attack && Keyboard.current.digit1Key.isPressed && can_use_buttons)
         {
             HUD_Fight.GetComponent<HUD_Fight_Script>().Pressed1();
             StartCoroutine(Courine_Wait());
-            if (current_enemy == 1)
+            if (current_enemy == 1 && Enemys_List_Here[0].GetComponent<Character_Script>().Died == false)
             {
+                
                 Enemy_1.GetComponent<Character_Script>().HP -= characters_list[current_queue].GetComponent<Character_Script>().DMG_Hand;
+                if (Enemys_List_Here[current_enemy-1].GetComponent<Character_Script>().HP <= 0)
+                {
+                    StartCoroutine(Death_Character(1,true));
+                    StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(0, current_enemy));
+                }
                 StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(Enemy_1.GetComponent<Character_Script>().HP / Enemy_1.GetComponent<Character_Script>().MaxHP, 1));
                 HUD_Fight.GetComponent<HUD_Fight_Script>().Back_Def();
                 wait_player_motion_attack = false;
@@ -155,7 +221,7 @@ public class Fight_Script : MonoBehaviour
                 move_speed_x = (final_place.x - anim_obj_attack.transform.position.x) / 500;
                 move_speed_y = (final_place.y - anim_obj_attack.transform.position.y) / 500;
                 anim_tick = 0;
-                current_queue += 1;
+                StartCoroutine(Next_Queue());
                 animation_attack = true;
             }
             else
@@ -167,9 +233,14 @@ public class Fight_Script : MonoBehaviour
         {
             HUD_Fight.GetComponent<HUD_Fight_Script>().Pressed2();
             StartCoroutine(Courine_Wait());
-            if (current_enemy == 2)
+            if (current_enemy == 2 && Enemys_List_Here[1].GetComponent<Character_Script>().Died == false)
             {
                 Enemy_2.GetComponent<Character_Script>().HP -= characters_list[current_queue].GetComponent<Character_Script>().DMG_Hand;
+                if (Enemys_List_Here[current_enemy-1].GetComponent<Character_Script>().HP <= 0)
+                {
+                    StartCoroutine(Death_Character(2, true));
+                    StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(0, current_enemy));
+                }
                 StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(Enemy_2.GetComponent<Character_Script>().HP / Enemy_2.GetComponent<Character_Script>().MaxHP, 2));
                 HUD_Fight.GetComponent<HUD_Fight_Script>().Back_Def();
                 wait_player_motion_attack = false;
@@ -179,7 +250,7 @@ public class Fight_Script : MonoBehaviour
                 move_speed_x = (final_place.x - anim_obj_attack.transform.position.x) / 500;
                 move_speed_y = (final_place.y - anim_obj_attack.transform.position.y) / 500;
                 anim_tick = 0;
-                current_queue += 1;
+                StartCoroutine(Next_Queue());
                 animation_attack = true;
             }
             else
@@ -191,9 +262,14 @@ public class Fight_Script : MonoBehaviour
         {
             HUD_Fight.GetComponent<HUD_Fight_Script>().Pressed3();
             StartCoroutine(Courine_Wait());
-            if (current_enemy == 3)
+            if (current_enemy == 3 && Enemys_List_Here[2].GetComponent<Character_Script>().Died == false)
             {
                 Enemy_3.GetComponent<Character_Script>().HP -= characters_list[current_queue].GetComponent<Character_Script>().DMG_Hand;
+                if (Enemys_List_Here[current_enemy-1].GetComponent<Character_Script>().HP <= 0)
+                {
+                    StartCoroutine(Death_Character(3, true));
+                    StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(0, current_enemy));
+                }
                 StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(Enemy_3.GetComponent<Character_Script>().HP / Enemy_3.GetComponent<Character_Script>().MaxHP, 3));
                 HUD_Fight.GetComponent<HUD_Fight_Script>().Back_Def();
                 wait_player_motion_attack = false;
@@ -203,7 +279,7 @@ public class Fight_Script : MonoBehaviour
                 move_speed_x = (final_place.x - anim_obj_attack.transform.position.x) / 500;
                 move_speed_y = (final_place.y - anim_obj_attack.transform.position.y) / 500;
                 anim_tick = 0;
-                current_queue += 1;
+                StartCoroutine(Next_Queue());
                 animation_attack = true;
             }
             else
@@ -211,7 +287,12 @@ public class Fight_Script : MonoBehaviour
                 current_enemy = 3;
             }
         }
-        if ((current_queue == 0 || current_queue == 1) && Keyboard.current.qKey.isPressed)
+        if (current_queue <=1 && characters_list[current_queue].GetComponent<Character_Script>().Died)
+        {
+            current_queue += 1;
+            return;
+        }
+        if ((current_queue == 0 || current_queue == 1) && Keyboard.current.qKey.isPressed && can_use_buttons)
         {
             HUD_Fight.GetComponent<HUD_Fight_Script>().QPressed();
             current_enemy = 1;
@@ -219,7 +300,12 @@ public class Fight_Script : MonoBehaviour
         } 
         if ((current_queue == 2 || current_queue == 3 || current_queue == 4) && can_use_buttons)
         {
-            Debug.Log(current_queue);
+            if (Enemys_List_Here[current_queue -2] == null || Enemys_List_Here[current_queue - 2].GetComponent<Character_Script>().Died)
+            {
+                current_queue += 1;
+                return;
+            }
+            
             StartCoroutine(Enemy_Attack_Default());
         }
     }

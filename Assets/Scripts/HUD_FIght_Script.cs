@@ -71,6 +71,26 @@ public class HUD_Fight_Script : MonoBehaviour
         {
             Bar_HP_3.transform.localScale = new Vector3(scalee, Bar_HP_3.transform.localScale.y, Bar_HP_3.transform.localScale.z);
         }
+        if (scalee == 0 && numberr == 1)
+        {
+            HP_Bars_Emptys[0].SetActive(false);
+        }
+        if (scalee == 0 && numberr == 2)
+        {
+            HP_Bars_Emptys[1].SetActive(false);
+        }
+        if (scalee == 0 && numberr == 3)
+        {
+            HP_Bars_Emptys[2].SetActive(false);
+        }
+        if (scalee == 0 && numberr == 4)
+        {
+            HP_Bars_Emptys[3].SetActive(false);
+        }
+        if (scalee == 0 && numberr == 5)
+        {
+            HP_Bars_Emptys[4].SetActive(false);
+        }
     }
 
     public void Back_Def()

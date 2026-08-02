@@ -29,7 +29,7 @@ public class ChooseScriipt : MonoBehaviour
         }
         if (collision.gameObject.GetComponent<Character_Script>().Type_Character == "Враг")
         {
-            Fight_Empty.GetComponent<Fight_Script>().Start_Fight(collision.gameObject.GetComponent<Enemy_Script>().list_enemys_for_fight);
+            Fight_Empty.GetComponent<Fight_Script>().Start_Fight(collision.gameObject.GetComponent<Enemy_Script>().list_enemys_for_fight, transform.position);
             this.gameObject.GetComponent<ChooseScriipt>().enabled = false;
         }
 

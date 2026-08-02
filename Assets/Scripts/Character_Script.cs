@@ -21,11 +21,7 @@ public class Character_Script : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (HP <= 0)
-        {
-            Died = true;
-            this.gameObject.SetActive(false);
-        }
+        
     }
 
     void Use_Skill(GameObject target,Skills_Script_List.Skill skill)
