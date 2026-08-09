@@ -19,6 +19,8 @@ public class HUD_Fight_Script : MonoBehaviour
     public Image Bar_HP_4;
     public Image Bar_HP_5;
     public GameObject[] HP_Bars_Emptys = new GameObject[5];
+    public GameObject Inv_obj;
+    public GameObject Inv_HUD_Empty;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -106,6 +108,15 @@ public class HUD_Fight_Script : MonoBehaviour
         Empty_HUD_Attack.SetActive(true);
         Empty_HUD_Def.SetActive(false);
         Button_Attack.SetText("1");
+    }
+
+    public void TPressed()
+    {
+        Empty_HUD_Items.SetActive(true);
+        Empty_HUD_Def.SetActive(false);
+        Inv_obj.GetComponent<Inventory>().Inv_Open = true;
+
+        Inv_HUD_Empty.SetActive(true);
     }
 
 

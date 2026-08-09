@@ -10,16 +10,20 @@ using UnityEngine.UI;
 public class Inventory : MonoBehaviour
 {
     public GameObject empty_hud_inv;
-    GameObject[] Inventory_List = new GameObject[5];
+    public GameObject[] Inventory_List = new GameObject[5];
     int[] Count_Item = new int[5];
     public Image[] slots_images = new Image[5];
     public TMP_Text[] counts_texts = new TMP_Text[5];
     public TMP_Text[] items_names = new TMP_Text[5];
     public TMP_Text[] items_buffs = new TMP_Text[5];
     public GameObject new_item;
-    bool Inv_Open = false;
+    public bool Inv_Open = false;
     public bool can_use_inv = true;
-    
+    public GameObject Arrow;
+    public bool use_item = false;
+    public Image Icon_1;
+    public Image HP_Bar_1;
+    public GameObject choose_object;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -56,6 +60,25 @@ public class Inventory : MonoBehaviour
             new_obj.transform.position = place_drop;
             new_obj.GetComponent<Get_Items>().can_get_up = false;
             StartCoroutine(Waiting_drop(new_obj));
+            slots_images[current_slot].sprite = null;
+            Inventory_List[current_slot] = null;
+            items_buffs[current_slot].SetText("-");
+            items_names[current_slot].SetText("-");
+        }
+    }
+
+    public void Use_Item(int current_slot)
+    {
+        if (Count_Item[current_slot] != 0 && Count_Item[current_slot] != 1)
+        {
+            Count_Item[current_slot]--;
+            counts_texts[current_slot].SetText(Count_Item[current_slot].ToString());
+            return;
+        }
+        if (Count_Item[current_slot] == 1)
+        {
+            Count_Item[current_slot]--;
+            counts_texts[current_slot].SetText("0");
             slots_images[current_slot].sprite = null;
             Inventory_List[current_slot] = null;
             items_buffs[current_slot].SetText("-");
@@ -140,6 +163,27 @@ public class Inventory : MonoBehaviour
                 }
 
             }
+            if (Keyboard.current.eKey.wasPressedThisFrame && Inv_Open && Count_Item[choose_object.GetComponent<ChooseScriipt>().last_slot]>=1)
+            {
+                empty_hud_inv.SetActive(false);
+                Inv_Open = false;
+                use_item = true;
+                choose_object.GetComponent<ChooseScriipt>().current_choose_char = 0; 
+                Arrow.SetActive(true);
+                Arrow.transform.position = new Vector2(Icon_1.transform.position.x - 90, Icon_1.transform.position.y);
+                StartCoroutine(choose_object.GetComponent<ChooseScriipt>().Wait_Use_Item());
+            }
+            
+        }
+        if (Keyboard.current.eKey.wasPressedThisFrame && Inv_Open && Count_Item[choose_object.GetComponent<ChooseScriipt>().last_slot] >= 1)
+        {
+            empty_hud_inv.SetActive(false);
+            Inv_Open = false;
+            use_item = true;
+            Arrow.SetActive(true);
+            Arrow.transform.position = new Vector2(HP_Bar_1.transform.position.x + 110, HP_Bar_1.transform.position.y - 70);
+            
+            StartCoroutine(choose_object.GetComponent<ChooseScriipt>().Wait_Use_Item());
         }
     }
 }

@@ -12,6 +12,14 @@ public class Effect_Script : MonoBehaviour
         lists_effects[2] = "Усиление";
     }
 
+    void use_item(int number_effect, GameObject item)
+    {
+        if (number_effect == 0)
+        {
+
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {

@@ -29,6 +29,8 @@ public class Fight_Script : MonoBehaviour
     float move_speed_y;
     Vector3 last_position_player;
     public GameObject choose_go;
+    public GameObject def_hud;
+    public GameObject choose_item;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -41,9 +43,11 @@ public class Fight_Script : MonoBehaviour
         Player.GetComponent<PlayerController>().enabled = true;
         Inv_Empty.GetComponent<Inventory>().can_use_inv = true;
         Player.transform.position = last_position_player;
+        def_hud.SetActive(true);
         characters_list[0].GetComponent<Character_Script>().Died = false;
         characters_list[0].gameObject.SetActive(true);
         characters_list[0].GetComponent<Character_Script>().HP = 1;
+        choose_item.GetComponent<ChooseScriipt>().enabled = true;
         if (characters_list[1] != null)
         {
             characters_list[1].GetComponent<Character_Script>().Died = false;
@@ -51,6 +55,7 @@ public class Fight_Script : MonoBehaviour
             characters_list[1].GetComponent<Character_Script>().HP = 1;
         }
         StartCoroutine(choose_go.GetComponent<ChooseScriipt>().Wait_After_Fight()); 
+        def_hud.GetComponent<Default_HUD>().locked_scan = false;
     }
 
     void Lost_Fight()
@@ -59,7 +64,7 @@ public class Fight_Script : MonoBehaviour
         HUD_Fight_Empty.SetActive(false);
         StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(characters_list[0].GetComponent<Character_Script>().HP / characters_list[0].GetComponent<Character_Script>().MaxHP, 4));
         StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(characters_list[0].GetComponent<Character_Script>().HP / characters_list[0].GetComponent<Character_Script>().MaxHP, 5));
-        current_queue = 0;
+        
 
     }
 
@@ -72,7 +77,9 @@ public class Fight_Script : MonoBehaviour
         Inv_Empty.GetComponent<Inventory>().can_use_inv = false;
         Camera.transform.position = (Spawn_Emptys[0].transform.position + Spawn_Emptys[2].transform.position) / 2;
         Camera.transform.position = new Vector3(Camera.transform.position.x, Camera.transform.position.y - 3.25f, -10f);
+        def_hud.SetActive(false);
         HUD_Fight_Empty.SetActive(true);
+        current_queue = 0;
         if (enemys_list[2] == null)
         {
             HUD_Fight.GetComponent<HUD_Fight_Script>().Start_Fight(2);
@@ -320,7 +327,14 @@ public class Fight_Script : MonoBehaviour
             HUD_Fight.GetComponent<HUD_Fight_Script>().QPressed();
             current_enemy = 1;
             Player_Motion_Attack(current_queue);
-        } 
+        }
+        if ((current_queue == 0 || current_queue == 1) && Keyboard.current.tKey.isPressed && can_use_buttons)
+        {
+            HUD_Fight.GetComponent<HUD_Fight_Script>().TPressed();
+            choose_item.GetComponent<ChooseScriipt>().enabled = true;
+            current_enemy = 1;
+            
+        }
         if ((current_queue == 2 || current_queue == 3 || current_queue == 4) && can_use_buttons)
         {
             if (Enemys_List_Here[current_queue -2] == null || Enemys_List_Here[current_queue - 2].GetComponent<Character_Script>().Died)
