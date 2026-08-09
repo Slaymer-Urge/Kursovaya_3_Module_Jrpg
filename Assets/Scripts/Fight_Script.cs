@@ -21,7 +21,7 @@ public class Fight_Script : MonoBehaviour
     GameObject Enemy_2;
     GameObject Enemy_3;
     GameObject[] Enemys_List_Here = new GameObject[3];
-    bool can_use_buttons = true;
+    bool can_use_buttons = false;
     GameObject anim_obj_attack;
     bool animation_attack = false;
     Vector3 final_place;
@@ -59,6 +59,7 @@ public class Fight_Script : MonoBehaviour
         HUD_Fight_Empty.SetActive(false);
         StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(characters_list[0].GetComponent<Character_Script>().HP / characters_list[0].GetComponent<Character_Script>().MaxHP, 4));
         StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(characters_list[0].GetComponent<Character_Script>().HP / characters_list[0].GetComponent<Character_Script>().MaxHP, 5));
+        current_queue = 0;
 
     }
 
@@ -111,6 +112,7 @@ public class Fight_Script : MonoBehaviour
             Enemy_3.transform.position = Spawn_Emptys[4].transform.position;
             Enemys_List_Here[2] = Enemy_3;
         }
+        can_use_buttons = true;
     }
 
     public void Player_Motion_Attack(int queue)
