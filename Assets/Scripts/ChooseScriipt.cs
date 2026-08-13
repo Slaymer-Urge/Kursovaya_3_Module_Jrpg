@@ -12,7 +12,7 @@ public class ChooseScriipt : MonoBehaviour
     float normal_x_position;
     public int last_slot = 0;
     public GameObject Inventory_Object;
-    bool blocked_drop = false;
+    public bool blocked_drop = false;
     [SerializeField] GameObject Fight_Empty;
     bool blocked_fight = false;
     bool is_open_inv;
@@ -26,6 +26,7 @@ public class ChooseScriipt : MonoBehaviour
     public GameObject Char_List;
     public bool block_use_item = true;
     public bool in_fight = false;
+    public GameObject HUD_Fight;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -104,7 +105,7 @@ public class ChooseScriipt : MonoBehaviour
             }
             if (is_open_inv == false && use_item && in_fight)
             {
-                arrow.transform.position = new Vector2(HP_Bar_1.transform.position.x - 110, HP_Bar_1.transform.position.y +70);
+                arrow.transform.position = new Vector2(HP_Bar_1.transform.position.x + 120, HP_Bar_1.transform.position.y - 70);
                 current_choose_char = 0;
             }
         }
@@ -122,7 +123,8 @@ public class ChooseScriipt : MonoBehaviour
             }
             if (is_open_inv == false && use_item && in_fight)
             {
-                arrow.transform.position = new Vector2(HP_Bar_2.transform.position.x - 110, HP_Bar_2.transform.position.y + 70);
+                Debug.Log("Нажата 2 кнопка");
+                arrow.transform.position = new Vector2(HP_Bar_2.transform.position.x + 120, HP_Bar_2.transform.position.y - 70);
                 current_choose_char = 1;
             }
         }
@@ -133,6 +135,9 @@ public class ChooseScriipt : MonoBehaviour
             arrow.SetActive(false);
             Inventory_Object.GetComponent<Inventory>().use_item = false;
             StartCoroutine(Wait_Use_Item());
+            blocked_drop = true;
+            Fight_Empty.GetComponent<Fight_Script>().current_queue += 1;
+            HUD_Fight.GetComponent<HUD_Fight_Script>().Back_Def();
         }
         if (Keyboard.current.digit3Key.isPressed)
         {

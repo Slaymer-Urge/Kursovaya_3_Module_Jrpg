@@ -115,7 +115,6 @@ public class HUD_Fight_Script : MonoBehaviour
         Empty_HUD_Items.SetActive(true);
         Empty_HUD_Def.SetActive(false);
         Inv_obj.GetComponent<Inventory>().Inv_Open = true;
-
         Inv_HUD_Empty.SetActive(true);
     }
 

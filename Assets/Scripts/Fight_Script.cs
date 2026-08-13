@@ -14,7 +14,7 @@ public class Fight_Script : MonoBehaviour
     public GameObject Inv_Empty;
     public GameObject HUD_Fight_Empty;
     public GameObject HUD_Fight;
-    int current_queue = 0;
+    public int current_queue = 0;
     bool wait_player_motion_attack;
     public int current_enemy;
     GameObject Enemy_1;
@@ -56,6 +56,7 @@ public class Fight_Script : MonoBehaviour
         }
         StartCoroutine(choose_go.GetComponent<ChooseScriipt>().Wait_After_Fight()); 
         def_hud.GetComponent<Default_HUD>().locked_scan = false;
+        choose_item.GetComponent<ChooseScriipt>().in_fight = false;
     }
 
     void Lost_Fight()
@@ -80,6 +81,7 @@ public class Fight_Script : MonoBehaviour
         def_hud.SetActive(false);
         HUD_Fight_Empty.SetActive(true);
         current_queue = 0;
+        choose_item.GetComponent<ChooseScriipt>().in_fight = true;
         if (enemys_list[2] == null)
         {
             HUD_Fight.GetComponent<HUD_Fight_Script>().Start_Fight(2);
@@ -332,6 +334,7 @@ public class Fight_Script : MonoBehaviour
         {
             HUD_Fight.GetComponent<HUD_Fight_Script>().TPressed();
             choose_item.GetComponent<ChooseScriipt>().enabled = true;
+            choose_item.GetComponent<ChooseScriipt>().blocked_drop = true;
             current_enemy = 1;
             
         }

@@ -24,6 +24,7 @@ public class Inventory : MonoBehaviour
     public Image Icon_1;
     public Image HP_Bar_1;
     public GameObject choose_object;
+    public GameObject HUD_Fight;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -183,6 +184,14 @@ public class Inventory : MonoBehaviour
             Arrow.SetActive(true);
             Arrow.transform.position = new Vector2(HP_Bar_1.transform.position.x + 110, HP_Bar_1.transform.position.y - 70);
             
+            StartCoroutine(choose_object.GetComponent<ChooseScriipt>().Wait_Use_Item());
+        }
+        if (Keyboard.current.eKey.wasPressedThisFrame && Inv_Open && Count_Item[choose_object.GetComponent<ChooseScriipt>().last_slot] <= 0)
+        {
+            empty_hud_inv.SetActive(false);
+            Inv_Open = false;
+            use_item = false;
+            HUD_Fight.GetComponent<HUD_Fight_Script>().Back_Def();
             StartCoroutine(choose_object.GetComponent<ChooseScriipt>().Wait_Use_Item());
         }
     }

@@ -8,10 +8,12 @@ public class Characters_List : MonoBehaviour
     public GameObject Player;
     public GameObject Inv_Empty;
     public GameObject Fight_Emp;
-    string effects = "0 - хилл, 1 - мана";
+    public GameObject HUD_Fight;
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     { 
+
     }
 
     public void Use_Item_On_Char(GameObject item, int number_char)
@@ -23,10 +25,13 @@ public class Characters_List : MonoBehaviour
                 if (characters_list[number_char].GetComponent<Character_Script>().HP + item.GetComponent<Get_Items>().count_effect >= characters_list[number_char].GetComponent<Character_Script>().MaxHP)
                 {
                     characters_list[number_char].GetComponent<Character_Script>().HP = characters_list[number_char].GetComponent<Character_Script>().MaxHP;
+                    StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(1, number_char + 4));
                 }
                 else
                 {
                     characters_list[number_char].GetComponent<Character_Script>().HP += item.GetComponent<Get_Items>().count_effect;
+                    
+                    StartCoroutine(HUD_Fight.GetComponent<HUD_Fight_Script>().Get_DMG_Enemys(characters_list[number_char].GetComponent<Character_Script>().HP / characters_list[number_char].GetComponent<Character_Script>().MaxHP, number_char + 4));
                 }
             }
         }
